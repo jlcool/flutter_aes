@@ -7,7 +7,6 @@ import 'dart:async';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_aes/flutter_aes.dart';
-import 'package:flutter_aes_example/data.dart';
 
 void main() => runApp(MyApp());
 
