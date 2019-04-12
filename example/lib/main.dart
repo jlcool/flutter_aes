@@ -28,10 +28,10 @@ class _MyAppState extends State<MyApp> {
       String _iv = "0000000000000000";
       Stopwatch stopwatch = Stopwatch()..start();
 
-      var result = base64.encode(await FlutterAes.encrypt(utf8.encode("123"), utf8.encode(_key), _iv));
+      var result = base64.encode(await FlutterAes.encrypt(utf8.encode("123"), utf8.encode(_key), utf8.encode(_iv)));
       print("encrypt 用时：${stopwatch.elapsed} result:$result");
         result = utf8.decode(await FlutterAes.decrypt(
-          base64.decode(result), utf8.encode(_key), _iv));
+          base64.decode(result), utf8.encode(_key), utf8.encode(_iv)));
       print("decrypt 用时：${stopwatch.elapsed} result:$result");
 
     } on PlatformException {}

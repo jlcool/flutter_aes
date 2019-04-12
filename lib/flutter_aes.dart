@@ -7,7 +7,7 @@ class FlutterAes {
   static const MethodChannel _channel = const MethodChannel('flutter_aes');
 
   static Future<Uint8List> decrypt(
-      Uint8List data, Uint8List key, String iv) async {
+      Uint8List data, Uint8List key, Uint8List iv) async {
     final Uint8List result = await _channel
         .invokeMethod('decrypt', {"data": data, "key": key, "iv": iv});
     return result;
@@ -19,7 +19,7 @@ class FlutterAes {
     return result;
   }
   static Future<Uint8List> encrypt(
-      Uint8List data, Uint8List key, String iv) async {
+      Uint8List data, Uint8List key, Uint8List iv) async {
     final Uint8List result = await _channel
         .invokeMethod('encrypt', {"data": data, "key": key, "iv": iv});
     return result;

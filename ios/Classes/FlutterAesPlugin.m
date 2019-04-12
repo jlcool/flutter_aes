@@ -12,32 +12,33 @@
 }
 
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
-    NSData *key =call.arguments[@"key"];
-    NSData *data =call.arguments[@"data"];
-    NSData *iv =call.arguments[@"iv"];
-  if ([@"decrypt" isEqualToString:call.method]) {
-    result([cipherOperation(data, key,iv, kCCDecrypt));
-  } else if ([@"encrypt" isEqualToString:call.method]) {
-    result([cipherOperation(data, key,iv, kCCEncrypt)]);
-  } else {
-    result(FlutterMethodNotImplemented);
-  }
+    FlutterStandardTypedData  *key =call.arguments[@"key"];
+    FlutterStandardTypedData  *data =call.arguments[@"data"];
+    FlutterStandardTypedData  *iv =call.arguments[@"iv"];
+    if ([@"decrypt" isEqualToString:call.method]) {
+        result([FlutterStandardTypedData typedDataWithBytes:cipherOperation(data.data, key.data,iv.data, kCCDecrypt)]);
+                } else if ([@"encrypt" isEqualToString:call.method]) {
+                    result([FlutterStandardTypedData typedDataWithBytes:cipherOperation(data.data, key.data,iv.data, kCCEncrypt)] );
+                } else {
+                    result(FlutterMethodNotImplemented);
+                }
 }
 
-NSData * cipherOperation(NSData *contentData, NSData *keyData,NSData *ivData, CCOperation operation) {
-    NSUInteger dataLength = contentData.length;
 
-    void const *initVectorBytes = ivData;
+NSData * cipherOperation(NSData *contentData, NSData *keyData,NSData *iv, CCOperation operation) {
+    NSUInteger dataLength = [contentData length];
+    
+    void const *initVectorBytes =  iv.bytes;
     void const *contentBytes = contentData.bytes;
     void const *keyBytes = keyData.bytes;
-
+    
     size_t operationSize = dataLength + kCCBlockSizeAES128;
     void *operationBytes = malloc(operationSize);
     if (operationBytes == NULL) {
         return nil;
     }
     size_t actualOutSize = 0;
-
+    
     CCCryptorStatus cryptStatus = CCCrypt(operation,
                                           kCCAlgorithmAES,
                                           kCCOptionPKCS7Padding,
@@ -49,7 +50,7 @@ NSData * cipherOperation(NSData *contentData, NSData *keyData,NSData *ivData, CC
                                           operationBytes,
                                           operationSize,
                                           &actualOutSize);
-
+    
     if (cryptStatus == kCCSuccess) {
         return [NSData dataWithBytesNoCopy:operationBytes length:actualOutSize];
     }
