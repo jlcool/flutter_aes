@@ -1,8 +1,8 @@
 name: flutter_aes
-description: A new Flutter plugin.
-version: 0.0.1
-author:
-homepage:
+description: A aes Encryption Flutter plugin.
+version: 0.1.1
+author: jlcool <jiangliang.net@gmail.com>
+homepage: https://github.com/jlcool/flutter_aes
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
