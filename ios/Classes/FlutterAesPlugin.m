@@ -4,11 +4,11 @@
 
 @implementation FlutterAesPlugin
 + (void)registerWithRegistrar:(NSObject<FlutterPluginRegistrar>*)registrar {
-  FlutterMethodChannel* channel = [FlutterMethodChannel
-      methodChannelWithName:@"flutter_aes"
-            binaryMessenger:[registrar messenger]];
-  FlutterAesPlugin* instance = [[FlutterAesPlugin alloc] init];
-  [registrar addMethodCallDelegate:instance channel:channel];
+    FlutterMethodChannel* channel = [FlutterMethodChannel
+                                     methodChannelWithName:@"flutter_aes"
+                                     binaryMessenger:[registrar messenger]];
+    FlutterAesPlugin* instance = [[FlutterAesPlugin alloc] init];
+    [registrar addMethodCallDelegate:instance channel:channel];
 }
 
 - (void)handleMethodCall:(FlutterMethodCall*)call result:(FlutterResult)result {
@@ -16,16 +16,14 @@
     FlutterStandardTypedData  *data =call.arguments[@"data"];
     FlutterStandardTypedData  *iv =call.arguments[@"iv"];
     if ([@"decrypt" isEqualToString:call.method]) {
-        result([FlutterStandardTypedData typedDataWithBytes:cipherOperation(data.data, key.data,iv.data, kCCDecrypt)]);
-                } else if ([@"encrypt" isEqualToString:call.method]) {
-                    result([FlutterStandardTypedData typedDataWithBytes:cipherOperation(data.data, key.data,iv.data, kCCEncrypt)] );
-                } else {
-                    result(FlutterMethodNotImplemented);
-                }
+        result([FlutterStandardTypedData typedDataWithBytes:[self operation:data.data keyData: key.data iv:iv.data op:kCCDecrypt]]);
+    } else if ([@"encrypt" isEqualToString:call.method]) {
+        result([FlutterStandardTypedData typedDataWithBytes:[self operation:data.data keyData: key.data iv:iv.data op:kCCEncrypt]] );
+    } else {
+        result(FlutterMethodNotImplemented);
+    }
 }
-
-
-NSData * cipherOperation(NSData *contentData, NSData *keyData,NSData *iv, CCOperation operation) {
+- (NSData *)operation:(NSData*)contentData keyData:(NSData*)keyData iv:(NSData*)iv op:(CCOperation)op {
     NSUInteger dataLength = [contentData length];
     
     void const *initVectorBytes =  iv.bytes;
@@ -39,7 +37,7 @@ NSData * cipherOperation(NSData *contentData, NSData *keyData,NSData *iv, CCOper
     }
     size_t actualOutSize = 0;
     
-    CCCryptorStatus cryptStatus = CCCrypt(operation,
+    CCCryptorStatus cryptStatus = CCCrypt(op,
                                           kCCAlgorithmAES,
                                           kCCOptionPKCS7Padding,
                                           keyBytes,
@@ -58,5 +56,4 @@ NSData * cipherOperation(NSData *contentData, NSData *keyData,NSData *iv, CCOper
     operationBytes = NULL;
     return nil;
 }
-
 @end
